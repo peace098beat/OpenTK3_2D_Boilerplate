@@ -1,6 +1,8 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 using System;
-
+using System.Collections.Generic;
 
 namespace x2DAudio
 {
@@ -11,20 +13,28 @@ namespace x2DAudio
     {
 
         OpenTK.Audio.AudioCapture AudioCapture;
-        private int[] wavebuffer512;
+        private int[] wavebuffer;
+        private bool RotationRight=true;
+
+        // ワールド座標の外枠
+        System.Drawing.Rectangle GlobalArea = new System.Drawing.Rectangle(-500, -500, 1000, 1000);
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         public Program(int width, int height, OpenTK.Graphics.GraphicsMode mode, string title) : base(width, height, mode, title)
         {
-            //System.Drawing.Rectangle rectangle = new System.Drawing.Rectangle(0, 0, 1024, 1024);
+            IList<string> devices = OpenTK.Audio.AudioCapture.AvailableDevices;
+            foreach (string device in devices)
+            {
+                Console.WriteLine(device);
+            }
 
-            // Opens the default device for audio recording. Implicitly set parameters are: 22050Hz, 16Bit Mono, 4096 samples ringbuffer.
+            // オーディオキャプチャ
             this.AudioCapture = new OpenTK.Audio.AudioCapture();
-
             this.AudioCapture.Start();
 
+            // デバッグ
             Console.WriteLine("[INFO] " + this.AudioCapture.AvailableSamples);
             Console.WriteLine("[INFO] " + this.AudioCapture.CurrentDevice);
             Console.WriteLine("[INFO] " + this.AudioCapture.CurrentError);
@@ -53,8 +63,8 @@ namespace x2DAudio
         /// <param name="e"></param>
         protected override void OnLoad(EventArgs e)
         {
-            // wavebuffer
-            wavebuffer512 = new int[1024];
+            // バッファの初期化
+            wavebuffer = new int[4096];
 
             // Set the clear color to blue
             GL.ClearColor(0.0f, 0.0f, 1.0f, 0.0f);
@@ -76,11 +86,42 @@ namespace x2DAudio
             /* 変換行列の初期化 */
             GL.LoadIdentity();
 
-            /* ワールド座標系を正規化デバイス座標系に平行投影 (orthographic projection : 正射影) する行列 */
             /* ワールド座標系を切り取る */
-            GL.Ortho(-2, 2, -2, 2, -1, 1);
+            GL.Ortho(GlobalArea.Left, GlobalArea.Right, GlobalArea.Bottom, GlobalArea.Top, -1, 1);
+
             base.OnResize(e);
         }
+
+        /// <summary>
+        /// キーボードショートカット
+        /// </summary>
+        protected override void OnKeyDown(KeyboardKeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            if (e.Key == OpenTK.Input.Key.Escape)
+            {
+                this.WindowState = WindowState.Normal;
+                //this.Exit();
+            }
+
+            if (e.Key == OpenTK.Input.Key.F11)
+            {
+                if (this.WindowState == WindowState.Fullscreen)
+                    this.WindowState = WindowState.Normal;
+                else
+                    this.WindowState = WindowState.Fullscreen;
+            }
+
+            if (e.Key == OpenTK.Input.Key.Right)
+            {
+                // 右回転
+                GL.Rotate(-1, 0, 0, 1);
+            }
+
+            if (e.Key == OpenTK.Input.Key.Left) { }
+        }
+
 
         /// <summary>
         /// Called when the frame is updated.
@@ -89,13 +130,28 @@ namespace x2DAudio
         {
             base.OnUpdateFrame(e);
 
-            // copy buffer
-            this.AudioCapture.ReadSamples(wavebuffer512, 1024);
+            // バッファの初期化
+            int sampleCount = 256;
+            int bufferLength = sampleCount * 2;
+
+            wavebuffer = new int[sampleCount];
+
+            // バッファのコピー (1024byte = 512sample)
+            this.AudioCapture.ReadSamples(wavebuffer, bufferLength);
+
+
+            // Rotation Right On
+            if (this.RotationRight == true)
+            {
+                GL.Rotate(-1, 0, 0, 1);
+            }
+
 
         }
 
+
         /// <summary>
-        /// Called when the frame is rendered.
+        /// Vertex(x,y)の座標はグローバル座標
         /// </summary>
         protected override void OnRenderFrame(OpenTK.FrameEventArgs e)
         {
@@ -103,21 +159,19 @@ namespace x2DAudio
 
             GL.Begin(PrimitiveType.LineStrip);
             {
-                GL.LineWidth(0.001f);
-                GL.Color4(OpenTK.Graphics.Color4.White);
+                GL.LineWidth(1);
 
-                GL.Vertex2(0.0, 0.0);
-                GL.Vertex2(1.0, 0.0);
+                GL.Color4(new OpenTK.Graphics.Color4(30,30,30,255));
 
-                GL.Vertex2(1.0, 1.0);
+                GL.Vertex2(GlobalArea.Left, GlobalArea.Top);
+                GL.Vertex2(GlobalArea.Right, GlobalArea.Top);
+                GL.Vertex2(GlobalArea.Right, GlobalArea.Bottom);
+                GL.Vertex2(GlobalArea.Left, GlobalArea.Bottom);
 
-                GL.Vertex2(-1.0, 1.0);
-                GL.Vertex2(-1.0, -1.0);
-                GL.Vertex2(1.0, -1.0);
-                GL.Vertex2(-1.0, 1.0);
+                GL.Vertex2(GlobalArea.Right, GlobalArea.Top);
+                GL.Vertex2(GlobalArea.Left, GlobalArea.Top);
+                GL.Vertex2(GlobalArea.Right, GlobalArea.Bottom);
 
-                GL.Vertex2(-1.0, -1.0);
-                GL.Vertex2(1.0, 1.0);
             }
             GL.End();
 
@@ -125,17 +179,19 @@ namespace x2DAudio
             GL.Begin(PrimitiveType.LineStrip);
             {
                 GL.LineWidth(0.001f);
-                GL.Color4(OpenTK.Graphics.Color4.White);
 
+                GL.Color4(OpenTK.Graphics.Color4.Black);
 
-                for (int i = 0; i < 512; i++)
+                int N = wavebuffer.Length;
+
+                for (int i = 0; i < N; i++)
                 {
-                    int v = wavebuffer512[i];
+                    int v = wavebuffer[i];
 
                     float x0 = -1f;
                     float x1 = 1;
-                    float dx = (x1 - x0) / 511f;
-                    float x = (i * dx) -1 ;
+                    float dx = (x1 - x0) / (N-1.0f);
+                    float x = (i * dx) - 1;
 
 
                     float y0 = -2;
@@ -144,7 +200,6 @@ namespace x2DAudio
                     float y = (float)v / Int32.MaxValue * dy;
 
                     GL.Vertex2(x, y);
-
                 }
 
             }
