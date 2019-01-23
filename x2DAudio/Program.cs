@@ -14,7 +14,7 @@ namespace x2DAudio
 
         OpenTK.Audio.AudioCapture AudioCapture;
         private int[] wavebuffer;
-        private bool RotationRight=true;
+        private bool RotationRight = true;
 
         // ワールド座標の外枠
         System.Drawing.Rectangle GlobalArea = new System.Drawing.Rectangle(-500, -500, 1000, 1000);
@@ -67,9 +67,30 @@ namespace x2DAudio
             wavebuffer = new int[4096];
 
             // Set the clear color to blue
-            GL.ClearColor(0.0f, 0.0f, 1.0f, 0.0f);
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+
 
             base.OnLoad(e);
+        }
+
+        int Hue1024 = 0;
+        float Sat = 0;
+        float Value = 0;
+
+        protected override void OnMouseMove(MouseMoveEventArgs e)
+        {
+            base.OnMouseMove(e);
+            int x = e.X;
+            int y = e.Y;
+
+            Sat = x / (float)(this.Width);
+            Value = y / (float)(this.Height);
+            float h = Hue1024 / 1024f;
+            //var c = OpenTK.Graphics.Color4.FromHsv(new Vector4(h, s, v, 1));
+            var c = OpenTK.Graphics.Color4.FromHsv(new Vector4(h, Sat, Value, 1));
+            GL.ClearColor(c);
+
         }
 
         /// <summary>
@@ -87,7 +108,8 @@ namespace x2DAudio
             GL.LoadIdentity();
 
             /* ワールド座標系を切り取る */
-            GL.Ortho(GlobalArea.Left, GlobalArea.Right, GlobalArea.Bottom, GlobalArea.Top, -1, 1);
+            //GL.Ortho(GlobalArea.Left, GlobalArea.Right, GlobalArea.Bottom, GlobalArea.Top, -1, 1);
+            GL.Ortho(GlobalArea.Left, GlobalArea.Right, GlobalArea.Top, GlobalArea.Bottom, -1, 1); // Y軸 Flip
 
             base.OnResize(e);
         }
@@ -130,6 +152,14 @@ namespace x2DAudio
         {
             base.OnUpdateFrame(e);
 
+            Hue1024++;
+
+            float h = Hue1024 / 1024f;
+            var c = OpenTK.Graphics.Color4.FromHsv(new Vector4(h, Sat, Value, 1));
+            GL.ClearColor(c);
+
+
+
             // バッファの初期化
             int sampleCount = 256;
             int bufferLength = sampleCount * 2;
@@ -143,7 +173,7 @@ namespace x2DAudio
             // Rotation Right On
             if (this.RotationRight == true)
             {
-                GL.Rotate(-1, 0, 0, 1);
+                //GL.Rotate(-1, 0, 0, 1);
             }
 
 
@@ -161,7 +191,7 @@ namespace x2DAudio
             {
                 GL.LineWidth(1);
 
-                GL.Color4(new OpenTK.Graphics.Color4(30,30,30,255));
+                GL.Color4(new OpenTK.Graphics.Color4(30, 30, 30, 255));
 
                 GL.Vertex2(GlobalArea.Left, GlobalArea.Top);
                 GL.Vertex2(GlobalArea.Right, GlobalArea.Top);
@@ -171,42 +201,57 @@ namespace x2DAudio
                 GL.Vertex2(GlobalArea.Right, GlobalArea.Top);
                 GL.Vertex2(GlobalArea.Left, GlobalArea.Top);
                 GL.Vertex2(GlobalArea.Right, GlobalArea.Bottom);
-
             }
             GL.End();
 
             //  waveform
-            GL.Begin(PrimitiveType.LineStrip);
+            GL.Begin(PrimitiveType.Points);
             {
-                GL.LineWidth(0.001f);
+                //GL.LineWidth(0.001f);
 
-                GL.Color4(OpenTK.Graphics.Color4.Black);
+                GL.Color4(OpenTK.Graphics.Color4.White);
 
                 int N = wavebuffer.Length;
+
+                GL.Vertex2(this.GlobalArea.Left, 0);
 
                 for (int i = 0; i < N; i++)
                 {
                     int v = wavebuffer[i];
 
-                    float x0 = -1f;
-                    float x1 = 1;
-                    float dx = (x1 - x0) / (N-1.0f);
-                    float x = (i * dx) - 1;
+                    float x0 = this.GlobalArea.Left;
+                    float x1 = this.GlobalArea.Right;
+                    float dx = (x1 - x0) / (N - 1.0f);
+                    float x = (i * dx) + x0;
 
 
-                    float y0 = -2;
-                    float y1 = 2;
+                    float y0 = this.GlobalArea.Bottom;
+                    float y1 = this.GlobalArea.Top;
                     float dy = (float)(y1 - y0);
+                    float r = (float)v / Int32.MaxValue;
                     float y = (float)v / Int32.MaxValue * dy;
 
+                    y = Math.Abs(y);
+                    y -= this.GlobalArea.Bottom;
+
+
+                    // 色
+
+
+                    // 上半分
                     GL.Vertex2(x, y);
+                    // 下半分
+                    //GL.Vertex2(x, -1*y);
                 }
+
+                GL.Vertex2(this.GlobalArea.Right, 0);
+
 
             }
             GL.End();
 
-            this.SwapBuffers();
 
+            this.SwapBuffers();
             base.OnRenderFrame(e);
         }
 
