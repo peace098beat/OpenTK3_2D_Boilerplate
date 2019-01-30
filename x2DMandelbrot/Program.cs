@@ -12,23 +12,6 @@ namespace x2DMandelbrot
     /// </summary>
     class Program : OpenTK.GameWindow
     {
-
-        // ワールド座標の外枠
-        System.Drawing.RectangleF GlobalArea;
-
-        public PointF gZoomCenter { get; private set; }
-        public SizeF gZoomArea { get; private set; }
-        public float gZoomRatio { get; private set; }
-        public int IterationNum = 100;
-
-        /// <summary>
-        /// コンストラクタ
-        /// </summary>
-        public Program(int width, int height, OpenTK.Graphics.GraphicsMode mode, string title) : base(width, height, mode, title)
-        {
-
-        }
-
         /// <summary>
         /// メイン関数
         /// </summary>
@@ -42,6 +25,28 @@ namespace x2DMandelbrot
             }
         }
 
+        // ワールド座標の外枠
+        System.Drawing.RectangleF GlobalArea;
+
+        public PointF gZoomCenter { get; private set; }
+        public SizeF gZoomArea { get; private set; }
+        public float gZoomRatio { get; private set; }
+        public int IterationNum = 100;
+
+        int N = 1024;
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public Program(int width, int height, OpenTK.Graphics.GraphicsMode mode, string title) : base(width, height, mode, title)
+        {
+            this.GlobalArea = new RectangleF(0, 0, N, N);
+
+        }
+
+
+        float[] image;
+
         /// <summary>
         /// ClearColorを設定
         /// </summary>
@@ -51,15 +56,17 @@ namespace x2DMandelbrot
 
             base.OnLoad(e);
 
-            this.gZoomCenter = new PointF(0, 0);
-            this.gZoomArea = new SizeF(4, 4);
-            this.gZoomRatio = 0.8F;
+            image = new float[N * N];
 
-            var x = gZoomCenter.X - gZoomArea.Width / 2f;
-            var y = gZoomCenter.Y - gZoomArea.Height / 2f;
-            var w = gZoomArea.Width;
-            var h = gZoomArea.Height;
-            this.GlobalArea = new RectangleF(x,y,w,h);
+            //this.gZoomCenter = new PointF(0, 0);
+            //this.gZoomArea = new SizeF(4, 4);
+            //this.gZoomRatio = 0.8F;
+
+            //var x = gZoomCenter.X - gZoomArea.Width / 2f;
+            //var y = gZoomCenter.Y - gZoomArea.Height / 2f;
+            //var w = gZoomArea.Width;
+            //var h = gZoomArea.Height;
+            //this.GlobalArea = new RectangleF(x, y, w, h);
         }
 
 
@@ -67,7 +74,7 @@ namespace x2DMandelbrot
         {
             base.OnMouseWheel(e);
 
-            this.IterationNum += e.Delta*5;
+            this.IterationNum += e.Delta * 5;
 
             this.Title = $"{IterationNum}, {e.Delta}";
 
@@ -154,19 +161,42 @@ namespace x2DMandelbrot
         protected override void OnUpdateFrame(OpenTK.FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
+            Console.WriteLine("On Update");
 
-            this.DrawMandelBrot();
+            count++;
+            //image[count] = count / (float)(N*N);
+
+            if (count > N * N) count = 0;
+            image[count] = 1f;
+
         }
 
-        /// <summary>
-        /// Vertex(x,y)の座標はグローバル座標
-        /// </summary>
+        int count = 0;
+        //int xi = 0;
+        //int yi = 0;
         protected override void OnRenderFrame(OpenTK.FrameEventArgs e)
         {
+            //Console.WriteLine($"xi:{xi}, yi:{yi}, c:{count}");
+            GL.Begin(PrimitiveType.Points);
+            {
+                for (int i = 0; i < N*N; i++)
+                {
+                    int x = (int)((float)i % N);
+                    int y = (int)((float)i / N);
+                    //float c = image[i];
+                    float c = 1f;
+                    GL.Color3(c, 0f, 0f);
+                    GL.Vertex2(x,y);
+                    //Console.WriteLine($"xi:{x}, yi:{y}, c:{c}");
+                }
+
+            }
+            GL.End();
             this.SwapBuffers();
             base.OnRenderFrame(e);
         }
 
+   
         void DrawMandelBrot()
         {
             Console.WriteLine("■ 描画開始");

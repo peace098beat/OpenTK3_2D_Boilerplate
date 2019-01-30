@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x2DAudio", "x2DAudio\x2DAud
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x2DMandelbrot", "x2DMandelbrot\x2DMandelbrot.csproj", "{C19FCA26-F1CD-40B4-8B95-602D0CF907E2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x2DShader", "x2DShader\x2DShader.csproj", "{C951B890-175C-4E99-AB89-58733423680E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x2DShaders", "x2DShaders\x2DShaders.csproj", "{2BDC909C-687D-4592-86FD-BC50C1AA7238}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{C19FCA26-F1CD-40B4-8B95-602D0CF907E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C19FCA26-F1CD-40B4-8B95-602D0CF907E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C19FCA26-F1CD-40B4-8B95-602D0CF907E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C951B890-175C-4E99-AB89-58733423680E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C951B890-175C-4E99-AB89-58733423680E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C951B890-175C-4E99-AB89-58733423680E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C951B890-175C-4E99-AB89-58733423680E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BDC909C-687D-4592-86FD-BC50C1AA7238}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BDC909C-687D-4592-86FD-BC50C1AA7238}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BDC909C-687D-4592-86FD-BC50C1AA7238}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BDC909C-687D-4592-86FD-BC50C1AA7238}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
