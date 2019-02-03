@@ -90,6 +90,9 @@ namespace x2DMultipleTextures
 
             // ---------- Uniform
 
+            // もし、Zoomアニメーションを制御したければ(中心点, ズーム率)
+            // CPU側で計算し、値をGPUに送るほうが良い.
+
             float time = (float)this.sw.Elapsed.TotalMilliseconds;
             GL.Uniform1(GL.GetUniformLocation(shader.Program, "time"), time);
 
@@ -99,13 +102,13 @@ namespace x2DMultipleTextures
             Vector2 resolution = new Vector2(Width, Height);
             GL.Uniform2(GL.GetUniformLocation(shader.Program, "resolution"), resolution);
 
+
+
             //vertices[0] += 0.001f;
 
             // ---------- VBO
             //GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject); // VBO
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.DynamicDraw); // Position3
-
-
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
             // ----------- VAO

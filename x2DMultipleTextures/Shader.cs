@@ -57,7 +57,7 @@ namespace x2DMultipleTextures
             GL.LinkProgram(Handle);
 
             string infoLogLink = GL.GetProgramInfoLog(Handle);
-            if( infoLogLink != System.String.Empty)
+            if (infoLogLink != System.String.Empty)
             {
                 System.Console.WriteLine(infoLogLink);
             }
@@ -77,6 +77,36 @@ namespace x2DMultipleTextures
             GL.UseProgram(Handle);
         }
 
+        internal void SetInt(string name, int value)
+        {
+            int location = GL.GetUniformLocation(Handle, name);
+
+            if (location == -1)
+            {
+                throw new ArgumentException("uniform name not found");
+            }
+
+            GL.Uniform1(location, value);
+        }
+
+        public void SetMatrix4(string name, OpenTK.Matrix4 matrix)
+        {
+            int location = GL.GetUniformLocation(Handle, name);
+            if (location == -1)
+            {
+                throw new ArgumentException("uniform name not found");
+            }
+            GL.UniformMatrix4(location, true, ref matrix);
+
+        }
+
+        public int GetUniformLocation(string uniformName)
+        {
+            return GL.GetUniformLocation(Handle, uniformName);
+        }
+
+
+
         public int GetAttribLocation(string attribName)
         {
             return GL.GetAttribLocation(Handle, attribName);
@@ -86,7 +116,7 @@ namespace x2DMultipleTextures
         {
             string readContents;
 
-            using(StreamReader streamReader = new StreamReader(path, Encoding.UTF8))
+            using (StreamReader streamReader = new StreamReader(path, Encoding.UTF8))
             {
                 readContents = streamReader.ReadToEnd();
             }

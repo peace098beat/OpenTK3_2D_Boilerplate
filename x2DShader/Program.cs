@@ -1,4 +1,4 @@
-﻿namespace x2DShaderEBO
+﻿namespace x2DMultipleTextures
 {
     class Program
     {

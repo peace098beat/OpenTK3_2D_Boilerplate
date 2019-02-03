@@ -2,7 +2,7 @@
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace x2DShaderEBO
+namespace x2DMultipleTextures
 {
     public class Game : OpenTK.GameWindow
     {

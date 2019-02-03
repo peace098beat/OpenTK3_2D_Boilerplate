@@ -13,6 +13,8 @@ namespace x2DMultipleTextures
         int VertexBufferObject;     // VBO
         int VertexArrayObject;      // VAO
         int ElementBufferObject;    // EBO
+        Texture texture;
+        Texture texture2;
 
         // Uniform
         private Vector2 mouse;
@@ -20,10 +22,11 @@ namespace x2DMultipleTextures
 
         float[] vertices =
         {
-             1.0f, 1.0f, 0.0f, //0 : top right
-             1.0f,-1.0f, 0.0f, //1 : btm right
-            -1.0f,-1.0f, 0.0f, //2 : btm left
-            -1.0f, 1.0f, 0.0f  //3 : top left
+            // position(x,y,z), Texture Coordinates(u,v)
+             1.0f, 1.0f, 0.0f, 1.0f, 1.0f, //0 : top right
+             1.0f,-1.0f, 0.0f, 1.0f, 0.0f, //1 : btm right
+            -1.0f,-1.0f, 0.0f, 0.0f, 0.0f, //2 : btm left
+            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f  //3 : top left
         };
 
         uint[] indices =
@@ -33,6 +36,7 @@ namespace x2DMultipleTextures
         };
 
         public Stopwatch sw=new Stopwatch();
+        private double time;
 
         /// <summary>
         /// Constractor
@@ -44,12 +48,10 @@ namespace x2DMultipleTextures
         /// </summary>
         protected override void OnLoad(EventArgs e)
         {
-
+            this.sw.Start();
 
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-            // ---------- Uniform
-            this.sw.Start();
 
             // ---------- VBO
             this.VertexBufferObject = GL.GenBuffer();
@@ -58,17 +60,32 @@ namespace x2DMultipleTextures
 
 
             // ---------- EBO
+
             this.ElementBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ElementBufferObject); // Element indices
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.DynamicDraw);
 
 
             // ---------- Shader
+
             shader = new Shader("shader.vert", "shader.frag");
             shader.Use();
 
 
-            // ---------- VAO
+            // ---------- Texture
+
+            texture = new Texture("container.png");
+            texture.Use(TextureUnit.Texture0);
+
+            texture2 = new Texture("awesomeface.png");
+            texture2.Use(TextureUnit.Texture1);
+
+            shader.SetInt("texture0", 0);
+            shader.SetInt("texture1", 1);
+
+
+            // ---------- VAO Bind
+
             this.VertexArrayObject = GL.GenVertexArray(); // VAO
             GL.BindVertexArray(VertexArrayObject);
 
@@ -76,8 +93,19 @@ namespace x2DMultipleTextures
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, this.ElementBufferObject);
 
 
-            GL.VertexAttribPointer(index: 0, size: 3, type: VertexAttribPointerType.Float, normalized: false, stride: 3 * sizeof(float), offset: 0);
-            GL.EnableVertexAttribArray(index: 0);
+            // ---------- VAO aPosition
+
+            int vertexLocation = shader.GetAttribLocation("aPosition");
+            GL.EnableVertexAttribArray(vertexLocation); // [Vertex Shader] Enable
+            GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0); // [p,p,p,-,-]
+
+
+            // ---------- VAO aTexCoord
+
+            int texCoordLocation = shader.GetAttribLocation("aTexCoord");
+            GL.EnableVertexAttribArray(texCoordLocation); // [Vertex Shader] Enable
+            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float)); // [-,-,-,t,t]
+
 
             // ---------- 
 
@@ -86,32 +114,32 @@ namespace x2DMultipleTextures
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            time += 4.0 * e.Time;
+
             GL.Clear(mask: ClearBufferMask.ColorBufferBit);
 
-            // ---------- Uniform
+            //// ---------- Uniform
 
-            float time = (float)this.sw.Elapsed.TotalMilliseconds;
-            GL.Uniform1(GL.GetUniformLocation(shader.Program, "time"), time);
+            //float time = (float)this.sw.Elapsed.TotalMilliseconds;
+            //GL.Uniform1(GL.GetUniformLocation(shader.Program, "time"), time);
 
-            Vector2 mouse = this.mouse;
-            GL.Uniform2(GL.GetUniformLocation(shader.Program, "mouse"), mouse);
+            //Vector2 mouse = this.mouse;
+            //GL.Uniform2(GL.GetUniformLocation(shader.Program, "mouse"), mouse);
 
-            Vector2 resolution = new Vector2(Width, Height);
-            GL.Uniform2(GL.GetUniformLocation(shader.Program, "resolution"), resolution);
+            //Vector2 resolution = new Vector2(Width, Height);
+            //GL.Uniform2(GL.GetUniformLocation(shader.Program, "resolution"), resolution);
 
-            //vertices[0] += 0.001f;
+            ////vertices[0] += 0.001f;
 
-            // ---------- VBO
-            //GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject); // VBO
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.DynamicDraw); // Position3
-
-
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VertexBufferObject);
             // ----------- VAO
+
             GL.BindVertexArray(VertexArrayObject); // VAO
 
+            // ----------- VAO
+            texture.Use(TextureUnit.Texture0);
+            texture2.Use(TextureUnit.Texture1);
             shader.Use();
+            // ----------- 
 
             GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
             // ----------- 
@@ -164,6 +192,8 @@ namespace x2DMultipleTextures
             GL.DeleteVertexArray(VertexArrayObject);
 
             shader.Dispose();
+            texture.Dispose();
+            texture2.Dispose();
             base.OnUnload(e);
         }
     }

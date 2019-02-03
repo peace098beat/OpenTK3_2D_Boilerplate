@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using OpenTK.Graphics.OpenGL;
 
-namespace x2DShaderEBO
+namespace x2DMultipleTextures
 {
     public class Shader : System.IDisposable
     {

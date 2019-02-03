@@ -13,6 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x2DShader", "x2DShader\x2DS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x2DShaders", "x2DShaders\x2DShaders.csproj", "{2BDC909C-687D-4592-86FD-BC50C1AA7238}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x2DMandelbrotShader", "x2DMandelbrotShader\x2DMandelbrotShader.csproj", "{A3C40455-46FE-45BE-8956-A7E5F7698FFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x2DTextures", "x2DTextures\x2DTextures.csproj", "{95BCA05B-74FD-4077-9FEF-2E403D1A8416}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x2DMultipleTextures", "x2DMultipleTextures\x2DMultipleTextures.csproj", "{5D36B120-7244-4EEF-87CB-34B2E94D7960}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +45,18 @@ Global
 		{2BDC909C-687D-4592-86FD-BC50C1AA7238}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BDC909C-687D-4592-86FD-BC50C1AA7238}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BDC909C-687D-4592-86FD-BC50C1AA7238}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3C40455-46FE-45BE-8956-A7E5F7698FFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3C40455-46FE-45BE-8956-A7E5F7698FFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3C40455-46FE-45BE-8956-A7E5F7698FFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3C40455-46FE-45BE-8956-A7E5F7698FFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95BCA05B-74FD-4077-9FEF-2E403D1A8416}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95BCA05B-74FD-4077-9FEF-2E403D1A8416}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95BCA05B-74FD-4077-9FEF-2E403D1A8416}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95BCA05B-74FD-4077-9FEF-2E403D1A8416}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D36B120-7244-4EEF-87CB-34B2E94D7960}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D36B120-7244-4EEF-87CB-34B2E94D7960}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D36B120-7244-4EEF-87CB-34B2E94D7960}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D36B120-7244-4EEF-87CB-34B2E94D7960}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -77,6 +77,11 @@ namespace x2DMultipleTextures
             GL.UseProgram(Handle);
         }
 
+        public int GetUniformLocation(string uniformName)
+        {
+            return GL.GetUniformLocation(Handle, uniformName);
+        }
+
         public int GetAttribLocation(string attribName)
         {
             return GL.GetAttribLocation(Handle, attribName);
