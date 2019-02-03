@@ -1,8 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using System;
+using System.Diagnostics;
 
 namespace x2DTraspose
 {
@@ -37,6 +37,8 @@ namespace x2DTraspose
 
         public Stopwatch sw=new Stopwatch();
         private double time;
+        private Matrix4 view;
+        private Matrix4 projection;
 
         /// <summary>
         /// Constractor
@@ -109,12 +111,18 @@ namespace x2DTraspose
 
             // ---------- 
 
+            view = Matrix4.CreateTranslation(0.0f, 0.0f, -15.0f);
+
+            this.projection = Matrix4.CreatePerspectiveFieldOfView((float)MathHelper.DegreesToRadians(45.0), Width / Height, 0.1f, 100.0f);
+
+            // ---------- 
+
             base.OnLoad(e);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            time += 4.0 * e.Time;
+            time += 400.0 * e.Time;
 
             GL.Clear(mask: ClearBufferMask.ColorBufferBit);
 
@@ -139,6 +147,15 @@ namespace x2DTraspose
             texture.Use(TextureUnit.Texture0);
             texture2.Use(TextureUnit.Texture1);
             shader.Use();
+            // ----------- 
+
+            Matrix4 model = Matrix4.Identity * Matrix4.CreateRotationY
+                ((float)MathHelper.DegreesToRadians(time));
+
+            shader.SetMatrix4("model", model);
+            shader.SetMatrix4("view", view);
+            shader.SetMatrix4("projection", projection);
+
             // ----------- 
 
             GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);

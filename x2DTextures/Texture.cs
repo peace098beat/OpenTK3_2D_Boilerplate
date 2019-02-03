@@ -7,7 +7,7 @@ using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-namespace x2DMultipleTextures
+namespace x2DTraspose
 {
     public class Texture : IDisposable
     {

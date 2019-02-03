@@ -1,4 +1,4 @@
-﻿namespace x2DMultipleTextures
+﻿namespace x2DTraspose
 {
     class Program
     {

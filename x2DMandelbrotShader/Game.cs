@@ -4,7 +4,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 
-namespace x2DMultipleTextures
+namespace x2DTraspose
 {
     public class Game : OpenTK.GameWindow
     {
