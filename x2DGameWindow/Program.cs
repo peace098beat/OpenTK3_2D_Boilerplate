@@ -39,7 +39,7 @@ namespace x2DGameWindow
         protected override void OnLoad(EventArgs e)
         {
             // Set the clear color to blue
-            GL.ClearColor(0.0f, 0.0f, 1.0f, 0.0f);
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
             base.OnLoad(e);
         }
@@ -61,7 +61,8 @@ namespace x2DGameWindow
 
             /* ワールド座標系を正規化デバイス座標系に平行投影 (orthographic projection : 正射影) する行列 */
             /* ワールド座標系を切り取る */
-            GL.Ortho(-2, 2, -2, 2, -1, 1);
+            //GL.Ortho(-2, 2, -2, 2, -1, 1);
+            GL.Ortho(-5, 105, -5, 105, -1, 1);
             base.OnResize(e);
         }
 
@@ -73,30 +74,64 @@ namespace x2DGameWindow
             base.OnUpdateFrame(e);
         }
 
+        float ASin(float t)
+        {
+            return (float)((Math.Sin(t)+1.0)/2.0);
+        }
+        int count;
         /// <summary>
         /// Called when the frame is rendered.
         /// </summary>
         protected override void OnRenderFrame(OpenTK.FrameEventArgs e)
         {
+            count++;
+
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            GL.Begin(PrimitiveType.LineLoop);
+            float t = ASin(count / 100.0f);
+
+            float Lx = 100;
+            float Ly = 100;
+            int Nx = 128;
+            int Ny = 128;
+
+            float dx = Lx/Nx;
+            float dy = Ly/Ny;
+
+            System.Random r = new System.Random();
+
+            this.Title = $"N={Nx*Ny}";
+
+            GL.Begin(PrimitiveType.Quads);
             {
-                GL.LineWidth(0.001f);
-                GL.Color4(OpenTK.Graphics.Color4.White);
+                for (int i = 0; i < Nx; i++)
+                {
+                    for (int j = 0; j < Ny; j++)
+                    {
+                        // Recti,j
+                        float x0 = i * dx + dx * 0.1f;
+                        float y0 = j * dy + dy * 0.1f;
+                        float x1 = x0 + dx - dx * 0.1f;
+                        float y1 = y0 + dy - dy * 0.1f;
 
-                GL.Vertex2(0.0, 0.0);
-                GL.Vertex2(1.0, 0.0);
+                        float h = (float)(t + r.Next(-3,3)/3.0f);
+                        if (1.0 < h) h -= 1.0f;
+                        else if (h < 0) h = 1 - h;
+                        
+                        var c = OpenTK.Graphics.Color4.FromHsv(new OpenTK.Vector4( h, 1.0f, 1.0f, 1f));
+                        GL.Color4(c);
 
-                GL.Vertex2(1.0, 1.0);
+                        GL.Vertex2(x0, y0);
 
-                GL.Vertex2(-1.0, 1.0);
-                GL.Vertex2(-1.0, -1.0);
-                GL.Vertex2(1.0, -1.0);
-                GL.Vertex2(-1.0, 1.0);
+                        GL.Vertex2(x1, y0);
 
-                GL.Vertex2(-1.0, -1.0);
-                GL.Vertex2(1.0, 1.0);
+                        GL.Vertex2(x1, y1);
+
+                        GL.Vertex2(x0, y1);
+                    }
+                }
+
+
             }
             GL.End();
 

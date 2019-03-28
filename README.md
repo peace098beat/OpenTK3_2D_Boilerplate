@@ -1,17 +1,20 @@
+# OpenTK3 Samples - 2D編 -
+
+## 概要
+OpenTK 3.0 説明書
+
+OpenTK3.0がリリースされたので、サンプルコードを書いた.
+
+2D編.
 
 
-# OpenTK 3.0 説明書
-
-OpenTK3.0がリリースされたので、サンプルコードを書いた
-
-
-## インストール
+## インストールの方法
 
 1. nugetを使ってOpenTK(3.0)をインストールする. 以上
 2. OpenALを使う場合は, 事前に[OpenALをインストール](https://www.openal.org/)しておく.
 
 
-## ドキュメント
+## 参考になるドキュメント
 
 1. [github/opentk](https://github.com/opentk/opentk)
 2. [OpenTK API Reference](https://opentk.net/api/index.html)
